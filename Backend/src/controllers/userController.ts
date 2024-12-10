@@ -26,7 +26,7 @@ export const createUser = async (req: Request, res: Response) : Promise<void> =>
     }
 
     const token = jwt.sign(
-      { userId: user.id, tenantId: user.tenantId, role: user.role },JWT_SECRET,{ expiresIn: '2days' }
+      { userId: user.id, tenantId: user.tenantId, role: user.role },JWT_SECRET,{ expiresIn: '20 days' }
     );
 
     
