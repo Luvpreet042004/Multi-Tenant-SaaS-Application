@@ -6,7 +6,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const tenantController_1 = require("../controllers/tenantController");
 const verifyAdmin_1 = require("../middlewares/verifyAdmin");
+const validateRequestMiddleware_1 = require("../middlewares/validateRequestMiddleware");
+const tenantSchema_1 = require("../schemas/tenantSchema");
 const router = express_1.default.Router();
-router.post('/create', tenantController_1.createTenantWithAdmin);
-router.get('/:tenantId', verifyAdmin_1.verifyAdmin, tenantController_1.getTenantDetails);
+router.post('/create', (0, validateRequestMiddleware_1.validateSchemaMiddleware)(tenantSchema_1.tenantSchema), tenantController_1.createTenantWithAdmin); //working
+router.get('/:tenantId', verifyAdmin_1.verifyAdmin, tenantController_1.getTenantDetails); //working
 exports.default = router;

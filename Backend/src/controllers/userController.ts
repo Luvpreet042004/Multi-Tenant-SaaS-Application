@@ -7,10 +7,11 @@ import { Request, Response } from 'express';
 const JWT_SECRET= process.env.JWT_SECRET;
 
 export const createUser = async (req: Request, res: Response) : Promise<void> => {
-  const { email, password, role,tenantId } = req.body;
+  const { email, password ,tenantId } = req.body;
 
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
+    const role = "user";
 
     const user = await prisma.user.create({
       data: {
@@ -86,5 +87,44 @@ export const loginUser = async (req: Request, res: Response) : Promise <any> => 
   } catch (error) {
     console.error('Login error:', error);
     res.status(500).json({ error: 'An error occurred during login' });
+  }
+};
+
+
+export const changePassword = async (req: Request, res: Response): Promise<void> => {
+  const { oldPassword, newPassword } = req.body;
+  const { id } = req.body; // Assuming `req.user` contains authenticated user info.
+
+  try {
+    // Fetch user from database
+    const user = await prisma.user.findUnique({
+      where: { id: id },
+    });
+
+    if (!user) {
+      res.status(404).json({ error: "User not found" });
+      return;
+    }
+
+    // Check if old password matches
+    const isValid = await bcrypt.compare(oldPassword, user.password);
+    if (!isValid) {
+      res.status(401).json({ error: "Old password is incorrect" });
+      return;
+    }
+
+    // Hash the new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    // Update the password in the database
+    await prisma.user.update({
+      where: { id: id },
+      data: { password: hashedPassword },
+    });
+
+    res.status(200).json({ message: "Password changed successfully" });
+  } catch (error) {
+    console.error("Error changing password:", error);
+    res.status(500).json({ error: "An error occurred while changing the password" });
   }
 };

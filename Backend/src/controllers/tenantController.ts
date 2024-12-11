@@ -81,7 +81,7 @@ export const getTenantDetails = async (req: Request, res: Response): Promise<voi
       res.status(404).json({ error: 'Tenant not found' });
     }
 
-    res.status(200).json(tenant);
+    res.status(200).json(tenant?.users);
   } catch (error) {
     console.error('Error fetching tenant details:', error);
     res.status(500).json({ error: 'An error occurred while fetching tenant details' });

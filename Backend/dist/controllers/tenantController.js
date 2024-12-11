@@ -77,7 +77,7 @@ const getTenantDetails = (req, res) => __awaiter(void 0, void 0, void 0, functio
         if (!tenant) {
             res.status(404).json({ error: 'Tenant not found' });
         }
-        res.status(200).json(tenant);
+        res.status(200).json(tenant === null || tenant === void 0 ? void 0 : tenant.users);
     }
     catch (error) {
         console.error('Error fetching tenant details:', error);

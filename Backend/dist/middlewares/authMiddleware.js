@@ -27,9 +27,6 @@ const authMiddleware = (req, res, next) => __awaiter(void 0, void 0, void 0, fun
             throw new Error('JWT_SECRET is not defined');
         }
         const decoded = jsonwebtoken_1.default.verify(token, JWT_SECRET);
-        yield prisma.user.findUnique({
-            where: { id: decoded.userId },
-        });
         next();
     }
     catch (error) {

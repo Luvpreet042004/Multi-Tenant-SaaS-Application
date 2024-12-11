@@ -1,7 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.validateSchemaMiddleware = void 0;
 const zod_1 = require("zod");
-const validateRequestMiddleware = (schema) => {
+const validateSchemaMiddleware = (schema) => {
     return (req, res, next) => {
         try {
             schema.parse(req.body);
@@ -9,10 +10,11 @@ const validateRequestMiddleware = (schema) => {
         }
         catch (error) {
             if (error instanceof zod_1.ZodError) {
-                return res.status(400).json({ error: error.errors });
+                res.status(400).json({ error: error.errors });
+                return;
             }
             next(error);
         }
     };
 };
-exports.default = validateRequestMiddleware;
+exports.validateSchemaMiddleware = validateSchemaMiddleware;

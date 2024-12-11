@@ -9,22 +9,19 @@ const JWT_SECRET = process.env.JWT_SECRET;
 const verifyAdmin = (req, res, next) => {
     var _a;
     const token = (_a = req.headers.authorization) === null || _a === void 0 ? void 0 : _a.split(' ')[1];
-    const { tenantId } = req.params;
     if (!token) {
         res.status(403).json({ error: 'No token provided' });
         return;
     }
     try {
         if (!JWT_SECRET) {
+            console.error('JWT_SECRET is not defined');
             throw new Error('JWT_SECRET is not defined');
         }
         const decoded = jsonwebtoken_1.default.verify(token, JWT_SECRET);
+        console.log('Decoded Token:', decoded);
         if (decoded.role !== 'admin') {
             res.status(403).json({ error: 'Unauthorized access' });
-            return;
-        }
-        if (decoded.tenantId !== Number(tenantId)) {
-            res.status(403).json({ error: 'Unauthorized access to tenant details' });
             return;
         }
         req.user = decoded;
