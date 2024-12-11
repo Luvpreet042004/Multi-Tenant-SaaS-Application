@@ -89,8 +89,10 @@ const loginUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 });
 exports.loginUser = loginUser;
 const changePassword = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
     const { oldPassword, newPassword } = req.body;
-    const { id } = req.body; // Assuming `req.user` contains authenticated user info.
+    const id = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id; // Assuming `req.user` contains authenticated user info.
+    console.log(id);
     try {
         // Fetch user from database
         const user = yield prisma.user.findUnique({
@@ -110,7 +112,7 @@ const changePassword = (req, res) => __awaiter(void 0, void 0, void 0, function*
         const hashedPassword = yield bcrypt_1.default.hash(newPassword, 10);
         // Update the password in the database
         yield prisma.user.update({
-            where: { id: id },
+            where: { id: Number(id) },
             data: { password: hashedPassword },
         });
         res.status(200).json({ message: "Password changed successfully" });

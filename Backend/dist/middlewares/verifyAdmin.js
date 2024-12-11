@@ -19,7 +19,6 @@ const verifyAdmin = (req, res, next) => {
             throw new Error('JWT_SECRET is not defined');
         }
         const decoded = jsonwebtoken_1.default.verify(token, JWT_SECRET);
-        console.log('Decoded Token:', decoded);
         if (decoded.role !== 'admin') {
             res.status(403).json({ error: 'Unauthorized access' });
             return;

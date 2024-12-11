@@ -19,7 +19,8 @@ const JWT_SECRET = process.env.JWT_SECRET;
 const authMiddleware = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-        return res.status(401).json({ error: 'Authorization token missing or malformed' });
+        res.status(401).json({ error: 'Authorization token missing or malformed' });
+        return;
     }
     const token = authHeader.split(' ')[1];
     try {
@@ -27,11 +28,18 @@ const authMiddleware = (req, res, next) => __awaiter(void 0, void 0, void 0, fun
             throw new Error('JWT_SECRET is not defined');
         }
         const decoded = jsonwebtoken_1.default.verify(token, JWT_SECRET);
+        req.user = {
+            id: decoded.userId,
+            tenantId: decoded.tenantId,
+            role: decoded.role
+        };
+        // console.log(decoded.id);
         next();
     }
     catch (error) {
         console.error('JWT Verification Error:', error);
-        return res.status(401).json({ error: 'Invalid or expired token' });
+        res.status(401).json({ error: 'Invalid or expired token' });
+        return;
     }
 });
 exports.default = authMiddleware;

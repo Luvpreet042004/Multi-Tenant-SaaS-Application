@@ -93,7 +93,8 @@ export const loginUser = async (req: Request, res: Response) : Promise <any> => 
 
 export const changePassword = async (req: Request, res: Response): Promise<void> => {
   const { oldPassword, newPassword } = req.body;
-  const { id } = req.body; // Assuming `req.user` contains authenticated user info.
+  const id  = req.user?.id; // Assuming `req.user` contains authenticated user info.
+  
 
   try {
     // Fetch user from database
@@ -118,7 +119,7 @@ export const changePassword = async (req: Request, res: Response): Promise<void>
 
     // Update the password in the database
     await prisma.user.update({
-      where: { id: id },
+      where: { id: Number(id) },
       data: { password: hashedPassword },
     });
 

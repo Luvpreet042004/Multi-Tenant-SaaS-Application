@@ -10,6 +10,6 @@ const router = express.Router();
 
 router.post('/loginUser' ,validateSchemaMiddleware(loginUserSchema), loginUser);//working
 router.post('/register',validateSchemaMiddleware(registerUserSchema), createUser);// working
-// router.post("/change-password",authMiddleware,validateRequestMiddleware(changePasswordSchema),changePassword);
+router.put("/change-password",validateSchemaMiddleware(changePasswordSchema),authMiddleware,changePassword);
 
 export default router;

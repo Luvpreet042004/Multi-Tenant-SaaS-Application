@@ -18,7 +18,6 @@ export const verifyAdmin = (req: Request, res: Response, next: NextFunction): vo
         }
 
         const decoded = jwt.verify(token, JWT_SECRET) as { id: number; tenantId: number; role: string };
-        console.log('Decoded Token:', decoded);
 
         if (decoded.role !== 'admin') {
             res.status(403).json({ error: 'Unauthorized access' });
