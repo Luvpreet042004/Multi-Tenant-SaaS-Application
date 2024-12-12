@@ -11,4 +11,6 @@ const tenantSchema_1 = require("../schemas/tenantSchema");
 const router = express_1.default.Router();
 router.post('/create', (0, validateRequestMiddleware_1.validateSchemaMiddleware)(tenantSchema_1.tenantSchema), tenantController_1.createTenantWithAdmin); //working
 router.get('/:tenantId', verifyAdmin_1.verifyAdmin, tenantController_1.getTenantDetails); //working
+router.put('/update', (0, validateRequestMiddleware_1.validateSchemaMiddleware)(tenantSchema_1.updateTenantSchema), verifyAdmin_1.verifyAdmin, tenantController_1.updateTenant);
+router.delete('/delete', verifyAdmin_1.verifyAdmin, tenantController_1.deleteTenant);
 exports.default = router;

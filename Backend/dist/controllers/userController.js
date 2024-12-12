@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.changePassword = exports.loginUser = exports.createUser = void 0;
+exports.deleteUser = exports.changePassword = exports.loginUser = exports.createUser = void 0;
 const client_1 = require("@prisma/client");
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
@@ -92,7 +92,6 @@ const changePassword = (req, res) => __awaiter(void 0, void 0, void 0, function*
     var _a;
     const { oldPassword, newPassword } = req.body;
     const id = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id; // Assuming `req.user` contains authenticated user info.
-    console.log(id);
     try {
         // Fetch user from database
         const user = yield prisma.user.findUnique({
@@ -123,3 +122,22 @@ const changePassword = (req, res) => __awaiter(void 0, void 0, void 0, function*
     }
 });
 exports.changePassword = changePassword;
+const deleteUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { userId } = req.body;
+    const admin = req.user;
+    try {
+        if (!admin || !userId) {
+            res.status(404).json({ error: 'User or Admin not found' });
+            return;
+        }
+        yield prisma.user.delete({
+            where: {
+                id: userId,
+                tenantId: admin.tenantId
+            }
+        });
+    }
+    catch (error) {
+    }
+});
+exports.deleteUser = deleteUser;

@@ -129,3 +129,26 @@ export const changePassword = async (req: Request, res: Response): Promise<void>
     res.status(500).json({ error: "An error occurred while changing the password" });
   }
 };
+
+export const deleteUser = async(req : Request, res : Response): Promise<void> => {
+  const {userId} = req.body;
+  const admin = req.user;
+
+  try {
+    
+    if(!admin || !userId){
+      res.status(404).json({ error: 'User or Admin not found' });
+      return;
+    }
+
+    await prisma.user.delete({
+      where :{
+        id : userId,
+        tenantId : admin.tenantId
+      }
+    })
+    
+  } catch (error) {
+    
+  }
+}

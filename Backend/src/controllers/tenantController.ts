@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { prisma } from "../prisma/prismaClient"; // Adjust path if necessary
 import bcrypt from "bcrypt";
 import jwt from 'jsonwebtoken';
+import {z} from "zod"
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -85,5 +86,80 @@ export const getTenantDetails = async (req: Request, res: Response): Promise<voi
   } catch (error) {
     console.error('Error fetching tenant details:', error);
     res.status(500).json({ error: 'An error occurred while fetching tenant details' });
+  }
+};
+
+export const updateTenant = async (req: Request, res: Response): Promise<void> => {
+  const user = req.user;
+  const data = req.body;
+
+  // Check if user is authenticated
+  if (!user) {
+    res.status(401).json({ error: 'User not authenticated' });
+    return;
+  }
+
+  const { tenantId } = user;
+
+  try {
+
+    // Ensure at least one field is provided
+    if (!data.name && !data.domain) {
+      res.status(400).json({ error: 'At least one of name or domain must be provided' });
+      return;
+    }
+
+    // Update tenant details
+    const updatedTenant = await prisma.tenant.update({
+      where: { id: tenantId },
+      data: {
+        ...data,
+      },
+    });
+
+    res.status(200).json({ message: 'Tenant updated successfully', tenant: updatedTenant });
+  } catch (error) {
+    console.error('Error updating tenant:', error);
+
+    // Handle validation errors
+    if (error instanceof z.ZodError) {
+      res.status(400).json({ error: error.errors });
+      return;
+    }
+
+    res.status(500).json({ error: 'An error occurred while updating the tenant' });
+  }
+};
+
+export const deleteTenant = async (req: Request, res: Response): Promise<void> => {
+  const admin = req.user;
+
+  
+  if (!admin) {
+    res.status(401).json({ error: 'User not authenticated' });
+    return;
+  }
+
+  const tenantId = admin?.tenantId;
+
+  try {
+    const tenant = await prisma.tenant.findUnique({ where: { id: tenantId } });
+
+    if (!tenant) {
+      res.status(404).json({ error: 'Tenant not found' });
+      return;
+    }
+
+    
+    await prisma.$transaction([
+      prisma.user.deleteMany({ where: { tenantId: tenantId } }),
+      prisma.project.deleteMany({ where: { tenantId: tenantId} }),
+      prisma.tenant.delete({ where: { id: tenantId } }),
+    ]);
+
+    res.status(200).json({ message: 'Tenant and all related users and projects deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting tenant:', error);
+    res.status(500).json({ error: 'An error occurred while deleting the tenant' });
   }
 };
