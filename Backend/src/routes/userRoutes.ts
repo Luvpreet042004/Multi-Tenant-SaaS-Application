@@ -5,13 +5,14 @@ import { loginUserSchema, registerUserSchema } from '../schemas/userSchemas';
 import { changePasswordSchema } from '../schemas/userSchemas';
 import authMiddleware from '../middlewares/authMiddleware';
 import { verifyAdmin } from '../middlewares/verifyAdmin';
+import { Request, Response } from 'express';
 
 
 const router = express.Router();
 
-router.post('/loginUser' ,validateSchemaMiddleware(loginUserSchema), loginUser);//working
+router.get('/loginUser' ,validateSchemaMiddleware(loginUserSchema), loginUser);//working
 router.post('/register',validateSchemaMiddleware(registerUserSchema), createUser);// working
-router.put("/change-password",validateSchemaMiddleware(changePasswordSchema),authMiddleware,changePassword);
-router.delete('/delete',verifyAdmin,deleteUser)
+router.put("/change-password",validateSchemaMiddleware(changePasswordSchema),authMiddleware,changePassword);// working
+router.delete('/delete',verifyAdmin,deleteUser);// working
 
 export default router;

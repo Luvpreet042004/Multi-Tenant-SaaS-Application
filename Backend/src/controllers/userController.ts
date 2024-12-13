@@ -147,8 +147,11 @@ export const deleteUser = async(req : Request, res : Response): Promise<void> =>
         tenantId : admin.tenantId
       }
     })
+
+    res.status(200).json({ message: "User Deleted successfully" });
     
   } catch (error) {
-    
+    console.error("Error deleting user:", error);
+    res.status(500).json({ error: "An error occurred while deleting user" });
   }
 }

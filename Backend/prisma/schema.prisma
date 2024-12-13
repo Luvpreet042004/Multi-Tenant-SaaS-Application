@@ -38,14 +38,15 @@ model User {
 
 
 model Project {
-  id        Int   @id @default(autoincrement())
-  name      String @unique
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
   description String?
-  status    String   // e.g., "Active", "Completed"
-  tenantId  Int
-  tenant    Tenant   @relation(fields: [tenantId], references: [id])
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  status      String   // e.g., "Active", "Completed"
+  deadline    DateTime
+  tenantId    Int
+  tenant      Tenant   @relation(fields: [tenantId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-  Users User[]
+  Users       User[]
 }
