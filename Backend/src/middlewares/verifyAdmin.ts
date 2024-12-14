@@ -12,6 +12,7 @@ export const verifyAdmin = (req: Request, res: Response, next: NextFunction): vo
     }
 
     try {
+        
         if (!JWT_SECRET) {
             console.error('JWT_SECRET is not defined');
             throw new Error('JWT_SECRET is not defined');
@@ -25,7 +26,10 @@ export const verifyAdmin = (req: Request, res: Response, next: NextFunction): vo
         }
 
         req.user = decoded;
+        
         next();
+        // console.log("called next");
+        
     } catch (error) {
         console.error('Authentication error:', error);
         res.status(401).json({ error: 'Invalid or expired token' });

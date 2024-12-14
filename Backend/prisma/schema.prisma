@@ -27,26 +27,36 @@ model User {
   id        Int       @id @default(autoincrement())
   email     String    @unique
   password  String
-  role      String   
+  role      String    // e.g., "Admin", "Member"
   tenantId  Int
   tenant    Tenant    @relation(fields: [tenantId], references: [id])
   createdAt DateTime  @default(now())
 
-  projects Project[]
+  userOnProjects UserOnProject[] // Connects User to projects via join table
 }
 
 
 
 model Project {
-  id          Int      @id @default(autoincrement())
-  name        String   @unique
+  id          Int       @id @default(autoincrement())
+  name        String    @unique
   description String?
-  status      String   // e.g., "Active", "Completed"
+  status      String    // e.g., "Active", "Completed"
   deadline    DateTime
   tenantId    Int
-  tenant      Tenant   @relation(fields: [tenantId], references: [id])
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  tenant      Tenant    @relation(fields: [tenantId], references: [id])
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 
-  Users       User[]
+  userOnProjects UserOnProject[] // Connects Project to users via join table
+}
+
+model UserOnProject {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  projectId Int
+  user      User     @relation(fields: [userId], references: [id])
+  project   Project  @relation(fields: [projectId], references: [id])
+
+  @@unique([userId, projectId]) // Ensures a user is added only once to a project
 }

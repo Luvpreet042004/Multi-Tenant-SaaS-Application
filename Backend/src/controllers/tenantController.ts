@@ -163,3 +163,25 @@ export const deleteTenant = async (req: Request, res: Response): Promise<void> =
     res.status(500).json({ error: 'An error occurred while deleting the tenant' });
   }
 };
+
+export const getAllProjects = async(req: Request, res: Response) : Promise<void> =>{
+  const admin = req.user;
+
+  if(!admin){
+      res.status(401).json({msg : "Admin not authenticated"})
+  }
+
+  try {
+      const tenantId = admin?.tenantId;
+      
+      const projects = await prisma.project.findMany({
+          where : {tenantId}
+      })
+      
+      res.status(200).json({ projects : projects})
+      
+  } catch (error) {
+      console.error('Error :', error);
+      res.status(500).json({ error: 'An error occurred while fetching project.' });
+  }
+}

@@ -1,6 +1,4 @@
 import { PrismaClient } from '@prisma/client';
-import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
 import { Request, Response } from 'express';
 
 const prisma = new PrismaClient();
@@ -102,7 +100,7 @@ export const editProject = async (req: Request, res: Response): Promise<void> =>
 
 
 export const getProject = async(req: Request, res: Response) : Promise<void> => {
-    const id = req.params;
+    const {id} = req.params;
     const user = req.user;
     const tenantId = user?.tenantId
 
@@ -113,32 +111,16 @@ export const getProject = async(req: Request, res: Response) : Promise<void> => 
     
     try {
         const project = await prisma.project.findUnique({
-            where : {id : Number(id),tenantId}
+            where : {id : Number(id)}
         })
+
+        if(project?.tenantId != tenantId) {
+            throw new Error("Project not found")
+        }
         
         res.status(200).json({ project: project})
     } catch (error) {
         console.error('Error :', error);
         res.status(500).json({ error: 'An error occurred while fetching project.' });
-    }
-}
-
-export const getAllProject = async(req: Request, res: Response) : Promise<void> => {
-    const admin = req.user;
-
-    if (!admin) {
-        res.status(401).json({ error: 'User not authenticated' });
-        return;
-      }
-    
-    try {
-        const projects = await prisma.project.findMany({
-            where : {tenantId : admin.tenantId}
-        })
-        
-        res.status(200).json({ projects: projects})
-    } catch (error) {
-        console.error('Error :', error);
-        res.status(500).json({ error: 'An error occurred while fetching projects.' });
     }
 }
