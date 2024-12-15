@@ -3,6 +3,15 @@ import { prisma } from "../prisma/prismaClient"; // Update with your actual Pris
 
 export const addUsersToProject = async (req: Request, res: Response): Promise<void> => {
     const { projectId, userIds } = req.body; // Expect projectId and an array of userIds
+    const admin = req.user;
+
+  
+  if (!admin) {
+    res.status(401).json({ error: 'User not authenticated' });
+    return;
+  }
+
+  const tenantId = admin?.tenantId;
 
     try {
         const project = await prisma.project.findUnique({ where: { id: Number(projectId) } });
@@ -16,6 +25,7 @@ export const addUsersToProject = async (req: Request, res: Response): Promise<vo
             data: userIds.map((userId: number) => ({
                 userId,
                 projectId: Number(projectId),
+                tenantId
             })),
             skipDuplicates: true, 
         });
@@ -29,6 +39,7 @@ export const addUsersToProject = async (req: Request, res: Response): Promise<vo
 
 export const deleteUserFromProject = async (req: Request, res: Response): Promise<void> => {
     const { projectId, userId } = req.params;
+    
 
     try {
         const userOnProject = await prisma.userOnProject.findFirst({

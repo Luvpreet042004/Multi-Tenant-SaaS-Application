@@ -152,6 +152,7 @@ export const deleteTenant = async (req: Request, res: Response): Promise<void> =
 
     
     await prisma.$transaction([
+      prisma.userOnProject.deleteMany({where : {tenantId: tenantId}}),
       prisma.user.deleteMany({ where: { tenantId: tenantId } }),
       prisma.project.deleteMany({ where: { tenantId: tenantId} }),
       prisma.tenant.delete({ where: { id: tenantId } }),

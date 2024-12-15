@@ -141,12 +141,20 @@ export const deleteUser = async(req : Request, res : Response): Promise<void> =>
       return;
     }
 
-    await prisma.user.delete({
-      where :{
-        id : userId,
-        tenantId : admin.tenantId
-      }
-    })
+    await prisma.$transaction(async (prisma) => {
+      await prisma.userOnProject.deleteMany({
+        where: {
+          userId: userId,
+        },
+      });
+
+      await prisma.user.delete({
+        where: {
+          id: userId,
+          tenantId: admin.tenantId,
+        },
+      });
+    });
 
     res.status(200).json({ message: "User Deleted successfully" });
     
